@@ -1,0 +1,3 @@
+[mysqld]
+auto-increment-increment = 2
+auto-increment-offset = 
