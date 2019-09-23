@@ -1,7 +1,7 @@
----
 jpsType: install
 jpsVersion: '1.5.2'
-name: MySQL-MariaDB Cluster
+name: MySQL / MariaDB Cluster
+id: mysql-cluster
 
 categories:
   - apps/clustered-dbs
@@ -13,7 +13,7 @@ description:
   short: A set of MySQL/MariaDB cluster topologies
   
 logo: /images/icon.png?_r=1
-baseUrl: https://raw.githubusercontent.com/sych74/mysql-cluster/master
+baseUrl: https://raw.githubusercontent.com/unigeocloud/mysql-cluster/master
 
 settings:
   fields:
@@ -24,9 +24,9 @@ settings:
       required: true
       values:        
         - value: mysql
-          caption: MySQL + ProxySQL
+          caption: MySQL CE
         - value: mariadb-dockerized
-          caption: MariaDB + ProxySQL
+          caption: MariaDB
       
     - caption: Topology
       type: list
@@ -52,6 +52,11 @@ settings:
               - value: galera
                 caption: Galera Cluster
 
+    - type: checkbox
+      name: is_proxysql
+      caption: Add ProxySQL for SQL Load Balancing
+      value: true
+
     - caption: None
       inputType: hidden
       type: list
@@ -62,6 +67,17 @@ settings:
               - value: mysql
             mariadb-dockerized:    
               - value: mariadb-dockerized
+
+    - caption: None
+      inputType: hidden
+      type: list
+      name: tag
+      dependsOn:                 
+        stack:
+            mysql:
+              - value: 8.0.16
+            mariadb-dockerized:    
+              - value: 10.3.16
 
     - caption: None
       inputType: hidden
@@ -83,13 +99,15 @@ settings:
 nodes:
   nodeType: "${settings.nodeType}"
   nodeGroup: sqldb
+  skipNodeEmails: true
   count: "${settings.nodes}"
+  tag: "${settings.tag}"
   cluster:
     scheme: "${settings.scheme}"
-    jps: "https://raw.githubusercontent.com/sych74/mysql-cluster/master/addons/auto-clustering/auto-cluster.jps"
+    jps: "https://raw.githubusercontent.com/unigeocloud/mysql-cluster/master/addons/auto-clustering/auto-cluster.jps"
   cloudlets: 8
   env:
     ON_ENV_INSTALL: "${baseUrl}/addons/auto-clustering/auto-cluster.jps"
     SCHEME: "${settings.scheme}"
-success:
-text: You should receive a bunch of emails ;). There are credentials and endpoints.
+    IS_PROXYSQL: "${settings.is_proxysql}"
+success: You should receive a bunch of emails ;). There are credentials and endpoints.
